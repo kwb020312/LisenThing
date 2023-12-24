@@ -16,11 +16,23 @@ function App() {
     console.log("Model Loaded");
     await recognizer.ensureModelLoaded();
     console.log(recognizer.wordLabels());
+    setModel(recognizer);
+    setLabels(recognizer.wordLabels());
   };
 
   useEffect(() => {
     loadModel();
   }, []);
+
+  const recognizeCommands = async () => {
+    console.log("Listening for commands");
+    model.listen(
+      (result) => {
+        console.log(result.scores);
+      },
+      { includeSpectrogram: true, probabilityThreshold: 0.9 }
+    );
+  };
   return (
     <div className="App">
       <header className="App-header">
@@ -28,14 +40,6 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
     </div>
   );
