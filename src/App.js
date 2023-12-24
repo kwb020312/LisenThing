@@ -24,14 +24,22 @@ function App() {
     loadModel();
   }, []);
 
+  function argMax(arr) {
+    return arr
+      .map((x, i) => [x, i])
+      .reduce((acc, cur) => (cur[0] > acc[0] ? cur : acc))[1];
+  }
+
   const recognizeCommands = async () => {
     console.log("Listening for commands");
     model.listen(
       (result) => {
         console.log(result.scores);
+        setAction(labels[argMax(Object.values(result.scores))]);
       },
       { includeSpectrogram: true, probabilityThreshold: 0.9 }
     );
+    setTimeout(() => model.stopListening(), 10e3);
   };
   return (
     <div className="App">
@@ -40,6 +48,9 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
+
+        <button onClick={recognizeCommands}>Command</button>
+        {action ? <div>{action}</div> : <div>No Action Detect</div>}
       </header>
     </div>
   );
